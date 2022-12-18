@@ -22,7 +22,8 @@ class LinkstesterCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
         $helper = $this->getHelper('process');
-        $process = new Process(['php', '/app/fink.phar', 'http://localhost', '--concurrency=12', '--output=/app/tests/linktests.json', '--exclude-url=_profiler']);
+        $process = new Process(['php', '/app/fink.phar', 'http://localhost', '500', '--concurrency=12', '--output=/app/tests/linktests.json', '--exclude-url=_profiler']);
+        $process->setTimeout(60000);
 
         $helper->run($output, $process, 'The process failed :(', function ($type, $data) {
             if (Process::ERR === $type) {
