@@ -32,13 +32,10 @@ class RemoveEntityCommand extends Command
             $io->text('Entity: ' . $entity);
             @unlink('src/Entity/' . $entity . '.php');
             @unlink('src/Repository/' . $entity . 'Repository.php');
-            @unlink('templates/' . $entity . '/index.html.twig');
-            @unlink('templates/' . $entity . '/new.html.twig');
-            @unlink('templates/' . $entity . '/show.html.twig');
-            @unlink('templates/' . $entity . '/edit.html.twig');
+            @rmdir('templates/' . $entity);
             @unlink('src/Controller/' . $entity . 'Controller.php');
             //on vérifie que les fichier sont supprimer
-            if (!file_exists('src/Entity/' . $entity . '.php') && !file_exists('src/Repository/' . $entity . 'Repository.php') && !file_exists('templates/' . $entity . '/index.html.twig') && !file_exists('templates/' . $entity . '/new.html.twig') && !file_exists('templates/' . $entity . '/show.html.twig') && !file_exists('templates/' . $entity . '/edit.html.twig') && !file_exists('src/Controller/' . $entity . 'Controller.php')) {
+            if (!file_exists('src/Entity/' . $entity . '.php') && !file_exists('src/Repository/' . $entity . 'Repository.php') &&  !file_exists('templates/' . $entity) && !file_exists('src/Controller/' . $entity . 'Controller.php')) {
                 $io->success('Entity removed');
             } else {
                 //on affiche les fichier qui n'ont pas été supprimer
@@ -48,18 +45,10 @@ class RemoveEntityCommand extends Command
                 if (file_exists('src/Repository/' . $entity . 'Repository.php')) {
                     $io->error('src/Repository/' . $entity . 'Repository.php');
                 }
-                if (file_exists('templates/' . $entity . '/index.html.twig')) {
-                    $io->error('templates/' . $entity . '/index.html.twig');
+                if (file_exists('templates/' . $entity)) {
+                    $io->error('templates/' . $entity);
                 }
-                if (file_exists('templates/' . $entity . '/new.html.twig')) {
-                    $io->error('templates/' . $entity . '/new.html.twig');
-                }
-                if (file_exists('templates/' . $entity . '/show.html.twig')) {
-                    $io->error('templates/' . $entity . '/show.html.twig');
-                }
-                if (file_exists('templates/' . $entity . '/edit.html.twig')) {
-                    $io->error('templates/' . $entity . '/edit.html.twig');
-                }
+
                 if (file_exists('src/Controller/' . $entity . 'Controller.php')) {
                     $io->error('src/Controller/' . $entity . 'Controller.php');
                 }
