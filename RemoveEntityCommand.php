@@ -32,10 +32,11 @@ class RemoveEntityCommand extends Command
             $io->text('Entity: ' . $entity);
             @unlink('src/Entity/' . $entity . '.php');
             @unlink('src/Repository/' . $entity . 'Repository.php');
+            @unlink('src/Form/' . $entity . 'Type.php');
             @rmdir('templates/' . $entity);
             @unlink('src/Controller/' . $entity . 'Controller.php');
             //on vérifie que les fichier sont supprimer
-            if (!file_exists('src/Entity/' . $entity . '.php') && !file_exists('src/Repository/' . $entity . 'Repository.php') &&  !file_exists('templates/' . $entity) && !file_exists('src/Controller/' . $entity . 'Controller.php')) {
+            if (!file_exists('src/Entity/' . $entity . '.php') && !file_exists('src/Repository/' . $entity . 'Repository.php') && !file_exists('src/Form/' . $entity . 'Type.php') &&  !file_exists('templates/' . $entity) && !file_exists('src/Controller/' . $entity . 'Controller.php')) {
                 $io->success('Entity removed');
             } else {
                 //on affiche les fichier qui n'ont pas été supprimer
@@ -44,6 +45,9 @@ class RemoveEntityCommand extends Command
                 }
                 if (file_exists('src/Repository/' . $entity . 'Repository.php')) {
                     $io->error('src/Repository/' . $entity . 'Repository.php');
+                }
+                if (file_exists('src/Form/' . $entity . 'Rtype.php')) {
+                    $io->error('src/Form/' . $entity . 'Type.php');
                 }
                 if (file_exists('templates/' . $entity)) {
                     $io->error('templates/' . $entity);
