@@ -26,38 +26,42 @@ class RemoveEntityCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
         $entity = ucfirst($input->getArgument('entity'));
-
+        $actions = ['Repository','Controller','Form','Entity'];
         if ($entity) {
             $io->title('Remove Entity');
             $io->text('Entity: ' . $entity);
-            @unlink('src/Entity/' . $entity . '.php');
-            @unlink('src/Repository/' . $entity . 'Repository.php');
-            @unlink('src/Form/' . $entity . 'Type.php');
-            @rmdir('templates/' . $entity);
-            @unlink('src/Controller/' . $entity . 'Controller.php');
-            //on vérifie que les fichier sont supprimer
-            if (!file_exists('src/Entity/' . $entity . '.php') && !file_exists('src/Repository/' . $entity . 'Repository.php') && !file_exists('src/Form/' . $entity . 'Type.php') &&  !file_exists('templates/' . $entity) && !file_exists('src/Controller/' . $entity . 'Controller.php')) {
-                $io->success('Entity removed');
-            } else {
-                //on affiche les fichier qui n'ont pas été supprimer
-                if (file_exists('src/Entity/' . $entity . '.php')) {
-                    $io->error('src/Entity/' . $entity . '.php');
-                }
-                if (file_exists('src/Repository/' . $entity . 'Repository.php')) {
-                    $io->error('src/Repository/' . $entity . 'Repository.php');
-                }
-                if (file_exists('src/Form/' . $entity . 'Rtype.php')) {
-                    $io->error('src/Form/' . $entity . 'Type.php');
-                }
-                if (file_exists('templates/' . $entity)) {
-                    $io->error('templates/' . $entity);
+            foreach ($actions as $action) {
+                switch ($action) {
+                    case 'Form':
+                        $name = $entity . 'Type';
+                        break;
+                    case 'Entity':
+                        $name = $entity;
+                        break;
+                    default:
+                        $name = $entity . $action;
+                        break;
                 }
 
-                if (file_exists('src/Controller/' . $entity . 'Controller.php')) {
-                    $io->error('src/Controller/' . $entity . 'Controller.php');
+                if (file_exists('src/' . $action . '/' . $name . '.php')) {
+                    $io->comment('Remove src/' . $action . '/' . $name . '.php');
+                    @unlink('src/' . $action . '/' . $name . '.php');
+                    if (!file_exists('src/' . $action . '/' . $name . '.php')) {
+                        $io->success($name . ' removed');
+                    }
                 }
-                return Command::FAILURE;
             }
+            if (file_exists('templates/' . lcfirst($entity))) {
+                $io->comment('Remove templates/' . lcfirst($entity));
+                //suppression des templates
+                exec('rm -rf templates/' . lcfirst($entity));
+                if (!file_exists('templates/' . lcfirst($entity))) {
+                    $io->success('template removed');
+                }
+            }
+               //on execute compoer autodump
+            $io->text('composer dump-autoload');
+            exec('composer dump-autoload');
         } else {
             $io->error('Entity not found');
             return Command::FAILURE;
