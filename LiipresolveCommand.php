@@ -52,7 +52,7 @@ class LiipresolveCommand extends Command
                     $input = new ArrayInput($arguments);
                     $command->run($input, $output);
                     //$retour = $this->cacheManager->store($imagePath, $filter);
-                    $output->writeln("Resolved cache for image '$imagePath' with filter '$filter'");
+                    $output->writeln("Resolved cache for image '$imagePath' ");
                 }
             }
         }
