@@ -35,7 +35,7 @@ class LiipresolveCommand extends Command
             ->setDescription('Resolve Liip Imagine cache for all articles');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $articles = $this->articleRepository->findBy(['deletedAt' => null]);
 
