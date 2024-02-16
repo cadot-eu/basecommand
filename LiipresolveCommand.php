@@ -15,14 +15,12 @@ use Symfony\Component\Console\Input\ArrayInput;
 class LiipresolveCommand extends Command
 {
     private $entityManager;
-    private $articleRepository;
     private $cacheManager;
     private $filterManager;
 
-    public function __construct(EntityManagerInterface $entityManager, ArticleRepository $articleRepository, CacheManager $cacheManager, FilterManager $filterManager)
+    public function __construct(EntityManagerInterface $entityManager,  CacheManager $cacheManager, FilterManager $filterManager)
     {
         $this->entityManager = $entityManager;
-        $this->articleRepository = $articleRepository;
         $this->cacheManager = $cacheManager;
         $this->filterManager = $filterManager;
 
@@ -36,27 +34,27 @@ class LiipresolveCommand extends Command
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
-    {
-        $articles = $this->articleRepository->findBy(['deletedAt' => null]);
-
-        foreach ($articles as $article) {
-            $crawler = new Crawler($article->getArticle());
-            $images = $crawler->filter('img')->extract(['src']);
-            foreach ($images as $imagePath) {
-                if (substr($imagePath, 0, strlen('/uploads')) == '/uploads') {
-                    $command = $this->getApplication()->find('liip:imagine:cache:resolve');
-                    $arguments = [
-                        'command' => 'liip:imagine:cache:resolve',
-                        'paths' => [urldecode($imagePath)],
-                    ];
-                    $input = new ArrayInput($arguments);
-                    $command->run($input, $output);
-                    //$retour = $this->cacheManager->store($imagePath, $filter);
-                    $output->writeln("Resolved cache for image '$imagePath' ");
+    { //on vérifie que artilce repository existe
+        if ($this->entityManager->getRepository('App\Entity\Article')->count(['deletedAt' => null]) > 0) {
+            $articles = $this->entityManager->getRepository('App\Entity\Article')->findBy(['deletedAt' => null]);
+            foreach ($articles as $article) {
+                $crawler = new Crawler($article->getArticle());
+                $images = $crawler->filter('img')->extract(['src']);
+                foreach ($images as $imagePath) {
+                    if (substr($imagePath, 0, strlen('/uploads')) == '/uploads') {
+                        $command = $this->getApplication()->find('liip:imagine:cache:resolve');
+                        $arguments = [
+                            'command' => 'liip:imagine:cache:resolve',
+                            'paths' => [urldecode($imagePath)],
+                        ];
+                        $input = new ArrayInput($arguments);
+                        $command->run($input, $output);
+                        //$retour = $this->cacheManager->store($imagePath, $filter);
+                        $output->writeln("Resolved cache for image '$imagePath' ");
+                    }
                 }
             }
         }
-
         $output->writeln('Cache resolution completed.');
         return Command::SUCCESS;
     }
